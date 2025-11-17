@@ -55,7 +55,7 @@ jobs:
         id: get_ownerID
         run: |
           OWNER_ID=$(curl -s -H "Authorization: Bearer $RENDER_API_KEY" \
-            https://api.render.com/v1/owners | jq -r '.[] | select(.type=="user") | .id')
+          https://api.render.com/v1/owners | jq -r '.[] | select(.type=="user") | .id' | tr -d '\n')
           echo "owner_id=$OWNER_ID" >> $GITHUB_OUTPUT
 
       - name: Check if web service exists on Render
@@ -71,9 +71,8 @@ jobs:
           fi
       - name: Create web service on Render if not exists
         if: steps.check_service.outputs.service_exists == 'false'
-        env:
-          OWNER_ID: ${{ steps.get_ownerID.outputs.owner_id }}
         run: |
+          OWNER_ID="${{ steps.get_ownerID.outputs.owner_id }}"
           curl -X POST https://api.render.com/v1/services \
           -H "Authorization: Bearer $RENDER_API_KEY" \
           -H "Content-Type: application/json" \
