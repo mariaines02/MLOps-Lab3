@@ -51,9 +51,6 @@ jobs:
           push: true
           tags: ${{ env.DOCKER_IMAGE }}
           file: ./Dockerfile
-      - name: Debug render owners
-        run: |
-          curl -s -H "Authorization: Bearer $RENDER_API_KEY" https://api.render.com/v1/owners | jq
       - name: Get Render ownerID
         id: get_ownerID
         run: |
@@ -97,7 +94,10 @@ jobs:
             \"dockerImage\": \"$DOCKER_IMAGE\",
             \"region\": \"$REGION\",
             \"plan\": \"$PLAN\",
-            \"ownerID\": \"$OWNER_ID\"
+            \"ownerID\": \"$OWNER_ID\",
+            \"serviceDetails\": {
+              \"dockerImage\": \"$DOCKER_IMAGE\"
+            }
           }"
       - name: Update web service if exists
         if: steps.check_service.outputs.service_exists == 'true'
