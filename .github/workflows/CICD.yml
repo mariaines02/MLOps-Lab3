@@ -71,6 +71,8 @@ jobs:
           fi
       - name: Create web service on Render if not exists
         if: steps.check_service.outputs.service_exists == 'false'
+        env:
+          OWNER_ID: ${{ steps.get_ownerID.outputs.owner_id }}
         run: |
           curl -X POST https://api.render.com/v1/services \
           -H "Authorization: Bearer $RENDER_API_KEY" \
@@ -81,9 +83,9 @@ jobs:
             \"dockerImage\": \"$DOCKER_IMAGE\",
             \"region\": \"$REGION\",
             \"plan\": \"$PLAN\",
-            \"ownerID\": \"${{ steps.get_ownerID.outputs.owner_id }}\"
+            \"ownerID\": \"$OWNER_ID\"
           }"
-      - name: Update web ervice if exists
+      - name: Update web service if exists
         if: steps.check_service.outputs.service_exists == 'true'
         run: |
           curl -X PATCH https://api.render.com/v1/services/${{ steps.check_service.outputs.service_id }} \
