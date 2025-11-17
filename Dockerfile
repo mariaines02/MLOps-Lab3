@@ -30,7 +30,7 @@ RUN uv pip install --system --no-cache .
 FROM base AS runtime
 # Copy the installed dependencies
 COPY --from=builder /usr/local /usr/local
-# Copy the source code
+# Copy the source code of the API, logic and home.html
 COPY api ./api
 COPY mylib ./mylib
 COPY templates ./templates
