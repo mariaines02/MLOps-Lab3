@@ -60,7 +60,7 @@ jobs:
           echo "Fetching Render owners..."
           # Tomamos el primer owner disponible (user u organization)
           OWNER_ID=$(curl -s -H "Authorization: Bearer $RENDER_API_KEY" \
-            https://api.render.com/v1/owners | jq -r '.[0].id' | tr -d '\n')
+            https://api.render.com/v1/owners | jq -r '.[].owner.id' | head -n1 | tr -d '\n')
           if [ -z "$OWNER_ID" ]; then
             echo "ERROR: Could not determine Render ownerID"
             exit 1
