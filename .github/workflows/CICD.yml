@@ -43,7 +43,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/my-fastapi-main:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/calculator-api:latest
           file: ./Dockerfile
       
       - name: Trigger Render Deploy
