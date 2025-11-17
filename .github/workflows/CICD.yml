@@ -80,7 +80,7 @@ jobs:
             \"type\": \"web_service\",
             \"dockerImage\": \"$DOCKER_IMAGE\",
             \"region\": \"$REGION\",
-            \"plan\": \"$PLAN\"
+            \"plan\": \"$PLAN\",
             \"ownerID\": \"${{ steps.get_ownerID.outputs.owner_id }}\"
           }"
       - name: Update web ervice if exists
