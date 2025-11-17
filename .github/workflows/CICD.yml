@@ -74,6 +74,7 @@ jobs:
         env:
           OWNER_ID: ${{ steps.get_ownerID.outputs.owner_id }}
         run: |
+          echo "$OWNER_ID"
           curl -X POST https://api.render.com/v1/services \
           -H "Authorization: Bearer $RENDER_API_KEY" \
           -H "Content-Type: application/json" \
