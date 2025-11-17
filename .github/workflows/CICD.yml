@@ -49,7 +49,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: $DOCKER_IMAGE
+          tags: ${{ env.DOCKER_IMAGE }}
           file: ./Dockerfile
 
       - name: Check if web service exists on Render
