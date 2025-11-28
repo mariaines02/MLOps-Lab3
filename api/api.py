@@ -1,20 +1,25 @@
 """
-FastAPI application for image prediction and preprocessing.
+FastAPI application for image prediction, preprocessing, and arithmetic operations.
 """
 
 import io
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile, HTTPException, Form, Request
 from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 import uvicorn
 from logic.predictor import ImagePredictor
+from mylib.calculator import add, subtract, multiply, divide, power
 
 
 app = FastAPI(
-    title="Image Classification API",
-    description="API for image classification and preprocessing",
+    title="MLOps Lab API",
+    description="API for image classification (Lab 2) and calculator (Lab 1)",
     version="1.0.0",
 )
+
+# We use the templates folder to obtain HTML files
+templates = Jinja2Templates(directory="templates")
 
 predictor = ImagePredictor()
 
@@ -49,161 +54,11 @@ class ResizeResponse(BaseModel):
 
 
 @app.get("/", response_class=HTMLResponse)
-async def home():
+async def home(request: Request):
     """
     Home endpoint serving the main page.
     """
-    html_content = """
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Image Classification API</title>
-        <style>
-            body {
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 40px 20px;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
-            }
-            .container {
-                background: rgba(255, 255, 255, 0.95);
-                padding: 40px;
-                border-radius: 20px;
-                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-                color: #333;
-            }
-            h1 {
-                color: #667eea;
-                text-align: center;
-                margin-bottom: 10px;
-                font-size: 2.5em;
-            }
-            .subtitle {
-                text-align: center;
-                color: #666;
-                margin-bottom: 40px;
-                font-size: 1.2em;
-            }
-            .feature-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 20px;
-                margin: 30px 0;
-            }
-            .feature-card {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                padding: 25px;
-                border-radius: 15px;
-                color: white;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-                transition: transform 0.3s ease;
-            }
-            .feature-card:hover {
-                transform: translateY(-5px);
-            }
-            .feature-card h3 {
-                margin-top: 0;
-                font-size: 1.3em;
-            }
-            .cta-button {
-                display: block;
-                background: #667eea;
-                color: white;
-                padding: 15px 30px;
-                text-align: center;
-                text-decoration: none;
-                border-radius: 10px;
-                font-weight: bold;
-                font-size: 1.1em;
-                margin: 30px auto;
-                max-width: 300px;
-                transition: background 0.3s ease;
-            }
-            .cta-button:hover {
-                background: #764ba2;
-            }
-            .info-section {
-                background: #f8f9fa;
-                padding: 20px;
-                border-radius: 10px;
-                margin: 20px 0;
-                border-left: 4px solid #667eea;
-            }
-            .endpoint-list {
-                list-style: none;
-                padding: 0;
-            }
-            .endpoint-list li {
-                padding: 10px;
-                margin: 5px 0;
-                background: white;
-                border-radius: 5px;
-                border-left: 3px solid #667eea;
-            }
-            code {
-                background: #f4f4f4;
-                padding: 2px 6px;
-                border-radius: 3px;
-                font-family: 'Courier New', monospace;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h1>🖼️ Image Classification API</h1>
-            <p class="subtitle">Machine Learning powered image processing and classification</p>
-            
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <h3>🎯 Prediction</h3>
-                    <p>Classify images into predefined categories with confidence scores.</p>
-                </div>
-                <div class="feature-card">
-                    <h3>📏 Resize</h3>
-                    <p>Resize images to any dimensions while maintaining quality.</p>
-                </div>
-                <div class="feature-card">
-                    <h3>⚫ Grayscale</h3>
-                    <p>Convert colored images to grayscale for processing.</p>
-                </div>
-                <div class="feature-card">
-                    <h3>✂️ Crop</h3>
-                    <p>Crop images to specific regions of interest.</p>
-                </div>
-            </div>
-
-            <a href="/docs" class="cta-button">📚 Explore API Documentation</a>
-
-            <div class="info-section">
-                <h2>Available Endpoints</h2>
-                <ul class="endpoint-list">
-                    <li><strong>POST /predict</strong> - Predict image class</li>
-                    <li><strong>POST /resize</strong> - Resize an image</li>
-                    <li><strong>POST /grayscale</strong> - Convert to grayscale</li>
-                    <li><strong>POST /normalize</strong> - Get image statistics</li>
-                    <li><strong>POST /crop</strong> - Crop an image</li>
-                    <li><strong>GET /health</strong> - Check API health</li>
-                </ul>
-            </div>
-
-            <div class="info-section">
-                <h2>Quick Start</h2>
-                <p>1. Visit <code>/docs</code> for interactive API documentation</p>
-                <p>2. Use the "Try it out" button on any endpoint</p>
-                <p>3. Upload an image and see the results instantly</p>
-            </div>
-
-            <p style="text-align: center; margin-top: 40px; color: #666;">
-                <strong>MLOps Lab1</strong> - Continuous Integration with GitHub Actions<br>
-                Version 1.0.0 | Built with FastAPI & PIL
-            </p>
-        </div>
-    </body>
-    </html>
-    """
-    return HTMLResponse(content=html_content)
+    return templates.TemplateResponse(request, "home.html")
 
 
 @app.get("/health")
@@ -213,10 +68,41 @@ async def health():
     """
     return {
         "status": "healthy",
-        "service": "Image Classification API",
+        "service": "MLOps Lab API",
         "version": "1.0.0",
     }
 
+
+# --- Lab 1: Calculator Endpoints ---
+
+@app.post("/calculate")
+async def calculate(op: str = Form(), a: float = Form(), b: float = Form()):
+    """
+    It performs an arithmetical operation according to the input parameters.
+    """
+    op = op.lower()
+
+    if op not in ["add", "subtract", "multiply", "divide", "power"]:
+        raise HTTPException(status_code=400, detail="Unvalid operation")
+
+    result = None
+    if op == "add":
+        result = add(a, b)
+    elif op == "subtract":
+        result = subtract(a, b)
+    elif op == "multiply":
+        result = multiply(a, b)
+    elif op == "divide":
+        if b == 0:
+            raise HTTPException(status_code=400, detail="Zero division not allowed")
+        result = divide(a, b)
+    elif op == "power":
+        result = power(a, b)
+
+    return {"result": result}
+
+
+# --- Lab 2: Image Classification Endpoints ---
 
 @app.post("/predict", response_model=PredictionResponse)
 async def predict_image(
