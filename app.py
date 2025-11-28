@@ -1,3 +1,10 @@
+"""
+Gradio application for the Image Classification API.
+
+This application provides a user-friendly interface to interact with the FastAPI backend.
+It is hosted on Hugging Face Spaces and communicates with the API deployed on Render.
+"""
+
 import gradio as gr
 import requests
 import os
@@ -5,10 +12,14 @@ from PIL import Image
 import io
 
 # URL of the API hosted in Render
+# We strip trailing slashes to ensure correct URL construction
 API_URL = os.getenv("API_URL", "https://your-render-service.onrender.com").rstrip("/")
 print(f"🚀 Using API URL: {API_URL}")
 
 def predict(image):
+    """
+    Send an image to the API for classification.
+    """
     if image is None:
         return "No image provided"
     try:
@@ -24,6 +35,9 @@ def predict(image):
         return f"Error: {str(e)}"
 
 def resize(image, width, height):
+    """
+    Send an image to the API for resizing.
+    """
     if image is None:
         return None
     try:
@@ -39,6 +53,9 @@ def resize(image, width, height):
         return None
 
 def grayscale(image):
+    """
+    Send an image to the API for grayscale conversion.
+    """
     if image is None:
         return None
     try:
@@ -53,6 +70,9 @@ def grayscale(image):
         return None
 
 def crop(image, left, top, right, bottom):
+    """
+    Send an image to the API for cropping.
+    """
     if image is None:
         return None
     try:
@@ -68,6 +88,9 @@ def crop(image, left, top, right, bottom):
         return None
 
 def normalize(image):
+    """
+    Send an image to the API for normalization.
+    """
     if image is None:
         return None
     try:
@@ -82,10 +105,12 @@ def normalize(image):
     except Exception:
         return None
 
+# Define the Gradio Interface with Tabs
 with gr.Blocks(title="MLOps Lab 2 - Image Tools") as app:
     gr.Markdown("# 🖼️ Image Processing & Classification API")
     gr.Markdown("Upload an image and choose a tool below.")
 
+    # Tab 1: Prediction
     with gr.Tab("🔮 Predict"):
         with gr.Row():
             pred_input = gr.Image(type="filepath", label="Upload Image")
@@ -93,6 +118,7 @@ with gr.Blocks(title="MLOps Lab 2 - Image Tools") as app:
         pred_button = gr.Button("Predict Class")
         pred_button.click(predict, inputs=pred_input, outputs=pred_output)
 
+    # Tab 2: Resize
     with gr.Tab("📏 Resize"):
         with gr.Row():
             resize_input = gr.Image(type="filepath", label="Upload Image")
@@ -103,6 +129,7 @@ with gr.Blocks(title="MLOps Lab 2 - Image Tools") as app:
         resize_button = gr.Button("Resize Image")
         resize_button.click(resize, inputs=[resize_input, width_input, height_input], outputs=resize_output)
 
+    # Tab 3: Grayscale
     with gr.Tab("⚫ Grayscale"):
         with gr.Row():
             gray_input = gr.Image(type="filepath", label="Upload Image")
@@ -110,6 +137,7 @@ with gr.Blocks(title="MLOps Lab 2 - Image Tools") as app:
         gray_button = gr.Button("Convert to Grayscale")
         gray_button.click(grayscale, inputs=gray_input, outputs=gray_output)
 
+    # Tab 4: Crop
     with gr.Tab("✂️ Crop"):
         with gr.Row():
             crop_input = gr.Image(type="filepath", label="Upload Image")
@@ -122,6 +150,7 @@ with gr.Blocks(title="MLOps Lab 2 - Image Tools") as app:
         crop_button = gr.Button("Crop Image")
         crop_button.click(crop, inputs=[crop_input, left_input, top_input, right_input, bottom_input], outputs=crop_output)
 
+    # Tab 5: Normalize
     with gr.Tab("📊 Normalize"):
         with gr.Row():
             norm_input = gr.Image(type="filepath", label="Upload Image")
