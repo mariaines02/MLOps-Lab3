@@ -5,7 +5,8 @@ from PIL import Image
 import io
 
 # URL of the API hosted in Render
-API_URL = os.getenv("API_URL", "https://your-render-service.onrender.com")
+API_URL = os.getenv("API_URL", "https://your-render-service.onrender.com").rstrip("/")
+print(f"🚀 Using API URL: {API_URL}")
 
 def predict(image):
     if image is None:
