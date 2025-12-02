@@ -1,3 +1,0 @@
-[submodule "gradio_app"]
-	path = gradio_app
-	url = https://github.com/JoseanSanz/gradio_app.git

@@ -71,7 +71,9 @@ async def health():
         "version": "1.0.0",
     }
 
+
 #  Image Classification Endpoints ---
+
 
 @app.post("/predict", response_model=PredictionResponse)
 async def predict_image(
