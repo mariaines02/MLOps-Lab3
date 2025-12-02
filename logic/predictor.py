@@ -4,61 +4,124 @@ Machine Learning logic for image classification and preprocessing.
 
 import io
 import random
-from typing import Tuple, List
+from typing import Tuple
 import numpy as np
 from PIL import Image
+
+
+import os
+import json
+import onnxruntime as ort
 
 
 class ImagePredictor:
     """Class for image prediction and preprocessing."""
 
-    def __init__(self, class_names: List[str] = None):
+    def __init__(
+        self, model_path="results/model.onnx", labels_path="results/classes.json"
+    ):
         """
-        Initialize the predictor with class names.
+        Initialize the predictor with model and class names.
+        """
+        self.model_path = model_path
+        self.labels_path = labels_path
+        self.session = None
+        self.classes = []
 
-        Args:
-            class_names: List of possible class names for prediction
-        """
-        if class_names is None:
-            self.class_names = [
-                "cat",
-                "dog",
-                "bird",
-                "fish",
-                "horse",
-                "car",
-                "bicycle",
-                "airplane",
-                "boat",
-                "train",
-            ]
+        if os.path.exists(self.model_path) and os.path.exists(self.labels_path):
+            try:
+                # Load labels
+                with open(self.labels_path, "r", encoding="utf-8") as f:
+                    self.classes = json.load(f)
+
+                # Start ONNX session
+                sess_options = ort.SessionOptions()
+                sess_options.intra_op_num_threads = 4
+                self.session = ort.InferenceSession(
+                    self.model_path, sess_options, providers=["CPUExecutionProvider"]
+                )
+                self.input_name = self.session.get_inputs()[0].name
+                print(f"Model loaded from {self.model_path}")
+            # pylint: disable=broad-exception-caught
+            except Exception as e:
+                print(f"Failed to load model: {e}")
         else:
-            self.class_names = class_names
+            print(
+                f"Model or labels not found at {self.model_path}, {self.labels_path}. Using fallback."
+            )
+            self.classes = ["cat", "dog"]  # Fallback
 
-    def predict(  # pylint: disable=unused-argument
-        self, image_path: str = None, seed: int = None
+    def preprocess(self, image_bytes: bytes) -> np.ndarray:
+        img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+        img = img.resize((224, 224))
+        image_data = np.array(img).astype(np.float32)
+
+        # Normalize
+        mean = np.array([0.485, 0.456, 0.406]).astype(np.float32)
+        std = np.array([0.229, 0.224, 0.225]).astype(np.float32)
+        image_data = image_data / 255.0
+        image_data = (image_data - mean) / std
+
+        # Transpose to (C, H, W)
+        image_data = image_data.transpose(2, 0, 1)
+
+        # Add batch dimension
+        image_data = np.expand_dims(image_data, axis=0).astype(np.float32)
+        return image_data
+
+    def predict(
+        self, image_bytes: bytes = None, image_path: str = None, seed: int = None
     ) -> dict:
         """
-        Predict the class of an image (randomly for now).
-
-        Args:
-            image_path: Path to the image file
-            seed: Random seed for reproducibility
-
-        Returns:
-            Dictionary with prediction results
+        Predict the class of an image using ONNX model.
+        Accepts either image_bytes or image_path.
         """
-        if seed is not None:
-            random.seed(seed)
+        if self.session is None:
+            # Fallback to random if model not loaded
+            if seed is not None:
+                random.seed(seed)
+            return {
+                "predicted_class": random.choice(self.classes),
+                "confidence": 0.0,
+                "all_classes": self.classes,
+            }
 
-        predicted_class = random.choice(self.class_names)
-        confidence = round(random.uniform(0.7, 0.99), 2)
+        try:
+            if image_bytes is None:
+                if image_path:
+                    with open(image_path, "rb") as f:
+                        image_bytes = f.read()
+                else:
+                    raise ValueError(
+                        "Either image_bytes or image_path must be provided"
+                    )
 
-        return {
-            "predicted_class": predicted_class,
-            "confidence": confidence,
-            "all_classes": self.class_names,
-        }
+            input_data = self.preprocess(image_bytes)
+            inputs = {self.input_name: input_data}
+            outputs = self.session.run(None, inputs)
+            logits = outputs[0][0]
+
+            # Softmax for confidence
+            exp_logits = np.exp(logits - np.max(logits))
+            probs = exp_logits / np.sum(exp_logits)
+
+            class_idx = np.argmax(probs)
+            confidence = float(probs[class_idx])
+            predicted_class = self.classes[class_idx]
+
+            return {
+                "predicted_class": predicted_class,
+                "confidence": round(confidence, 2),
+                "all_classes": self.classes,
+            }
+        # pylint: disable=broad-exception-caught
+        except Exception as e:
+            print(f"Prediction error: {e}")
+            return {
+                "predicted_class": "error",
+                "confidence": 0.0,
+                "all_classes": self.classes,
+            }
 
     def resize_image(
         self, image_path: str, width: int, height: int, output_path: str = None

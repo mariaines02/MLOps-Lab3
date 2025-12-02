@@ -1,206 +1,69 @@
----
-title: MLOps Lab2
-emoji: 🚀
-colorFrom: blue
-colorTo: purple
-sdk: gradio
-sdk_version: "5.49.1"
-app_file: app.py
-pinned: false
-license: mit
----
+# MLOps Lab 3: Experiment Tracking and Model Versioning
 
-# MLOps Lab 2: Continuous Delivery with GitHub Actions
+This project is the final stage of the MLOps Laboratory series, building upon the API/CLI foundation of **Lab 1** and the Docker/CD pipeline of **Lab 2**.
 
-[![CI/CD Pipeline](https://github.com/mariaines02/MLOps-Lab2/actions/workflows/cicd.yml/badge.svg)](https://github.com/mariaines02/MLOps-Lab2/actions/workflows/cicd.yml)
-[![Python](https://img.shields.io/badge/Python-3.13-blue.svg)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-green.svg)](https://fastapi.tiangolo.com/)
-[![Docker](https://img.shields.io/badge/Docker-Enabled-blue.svg)](https://www.docker.com/)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+In this lab, we replace the random prediction logic with a real Deep Learning model (**MobileNet_v2**) trained on the Oxford-IIIT Pet dataset. We demonstrate how to track experiments and version models using **MLFlow**, and how to deploy a serialized **ONNX** model using **FastAPI** and **Docker**.
 
-This project is the **continuation of MLOps Lab 1**. While Lab 1 focused on building the API and CLI, **Lab 2 focuses on automating the deployment** using Docker, GitHub Actions, Render, and Hugging Face Spaces.
+## Project Structure
 
-**Live Demo:**
-- **Frontend (Hugging Face):** [https://huggingface.co/spaces/mariaines02/mlops-lab2](https://huggingface.co/spaces/mariaines02/mlops-lab2)
-- **Backend (Render):** [https://mlops-lab2-latest-7ffu.onrender.com](https://mlops-lab2-latest-7ffu.onrender.com)
-- **Docker Image:** [https://hub.docker.com/repository/docker/mariaines02/mlops-lab2/general](https://hub.docker.com/repository/docker/mariaines02/mlops-lab2/general)
+- `src/train.py`: Script to train MobileNet_v2 on the Oxford-IIIT Pet dataset. Logs parameters, metrics, and artifacts to MLFlow.
+- `src/select_model.py`: Script to query MLFlow for the best performing model, export it to ONNX format, and download class labels.
+- `src/inference.py`: Standalone script to demonstrate inference using the exported ONNX model.
+- `logic/predictor.py`: Logic class used by the API to load the ONNX model and perform predictions.
+- `api/api.py`: FastAPI application serving the model.
+- `Dockerfile`: Configuration to containerize the application.
 
----
+## Setup
 
-## 📋 Table of Contents
+1. **Install dependencies**:
+   This project uses `uv` for dependency management.
+   ```bash
+   uv sync
+   ```
 
-- [Project Overview](#-project-overview)
-- [Lab 2 Objectives](#-lab-2-objectives)
-- [Project Structure](#-project-structure)
-- [Features](#-features)
-- [Setup & Installation](#-setup--installation)
-- [Running Locally](#-running-locally)
-- [Docker Usage](#-docker-usage)
-- [CI/CD Pipeline Details](#-cicd-pipeline-details)
-- [Configuration](#-configuration)
+2. **Activate environment**:
+   ```bash
+   source .venv/bin/activate
+   ```
 
----
+## Workflow
 
-## 🎯 Project Overview
-
-This project implements a complete **MLOps pipeline** for an Image Classification application.
--   **Lab 1 Foundation**: Reuses the Image Classification logic (Predict, Resize, Crop, Grayscale, Normalize).
--   **Lab 2 Enhancements**: Adds containerization and automated deployment.
-
-### Technology Stack
-
--   **Language:** Python 3.13
--   **API:** FastAPI + Uvicorn
--   **UI:** Gradio (hosted on Hugging Face)
--   **Container:** Docker
--   **CI/CD:** GitHub Actions
--   **Package Manager:** UV
-
----
-
-## 🚀 Lab 2 Objectives
-
-The main goal of this lab is to move from a local application to a deployed, automated system:
-1.  **Containerize** the application using Docker.
-2.  **Automate** testing and building using GitHub Actions.
-3.  **Deploy** the API to a cloud provider (Render).
-4.  **Deploy** the UI to a platform (Hugging Face Spaces).
-
----
-
-## 📁 Project Structure
-
-```
-MLOps-Lab2/
-├── .github/workflows/
-│   └── cicd.yml          # The heart of the CI/CD pipeline
-├── api/
-│   └── api.py            # FastAPI backend (merged Lab 1 & 2 logic)
-├── cli/
-│   └── cli.py            # Command-line interface
-├── logic/
-│   └── predictor.py      # Image processing logic
-├── templates/
-│   └── home.html         # API Home page
-├── tests/                # Unit and integration tests
-├── app.py                # Gradio frontend application
-├── Dockerfile            # Docker image definition
-├── Makefile              # Development commands
-├── pyproject.toml        # Project dependencies
-├── requirements.txt      # Gradio dependencies
-└── README.md             # Documentation
-```
-
----
-
-## ✨ Features
-
-### 🧠 Image Classification API
--   **Predict**: Classify images (simulated/random for Lab 2).
--   **Image Tools**: Resize, Crop, Grayscale, Normalize.
--   **Docs**: Interactive Swagger UI at `/docs`.
-
-### 🎨 Gradio User Interface
-A user-friendly web interface hosted on Hugging Face Spaces offering tabs for:
--   🔮 **Prediction**
--   📏 **Resizing**
--   ⚫ **Grayscale Conversion**
--   ✂️ **Cropping**
--   📊 **Normalization**
-
----
-
-## 🔄 CI/CD Pipeline Details
-
-The workflow is defined in `.github/workflows/cicd.yml` and consists of two jobs:
-
-### Job 1: `deploy-api`
-1.  **Checks out the code**.
-2.  **Logs in to Docker Hub** using secrets.
-3.  **Builds the Docker image** using the `Dockerfile`.
-4.  **Pushes the image** to Docker Hub (`mariaines02/mlops-lab2:latest`).
-5.  **Triggers a redeployment on Render** using a webhook.
-
-### Job 2: `deploy-hf` (Runs after `deploy-api`)
-1.  **Checks out the `hf-space` branch**.
-2.  **Pushes the contents** of this branch to your HuggingFace Space repository.
-
----
-
-## 🚀 Setup & Installation
-
-### Prerequisites
--   Python 3.13+
--   UV (recommended) or Pip
--   Docker (optional)
-
-### Installation
-
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/mariaines02/MLOps-Lab2.git
-    cd MLOps-Lab2
-    ```
-
-2.  **Install dependencies:**
-    ```bash
-    make install
-    # OR
-    uv sync
-    ```
-
----
-
-## 💻 Running Locally
-
-### 1. Run the API
+### 1. Train the Model
+Train the model using transfer learning (MobileNet_v2). You can run multiple experiments with different configurations.
 ```bash
-make run-api
+uv run python src/train.py --epochs 5 --batch_size 32 --learning_rate 0.001
 ```
-Access at `http://localhost:8000`.
 
-### 2. Run the Gradio App
+### 2. Track Experiments
+Visualize your experiments using the MLFlow UI.
 ```bash
-export API_URL="http://localhost:8000"
-uv run python app.py
+uv run mlflow ui
 ```
-Access at `http://localhost:7860`.
+Open your browser at `http://127.0.0.1:5000`.
 
----
-
-## 🐳 Docker Usage
-
-Build and run the application in a container:
-
+### 3. Select and Export Best Model
+Select the best model based on validation accuracy and export it to ONNX.
 ```bash
-# Build
-docker build -t mlops-lab2 .
+uv run python src/select_model.py
+```
+This will create `results/model.onnx` and `results/classes.json`.
 
-# Run
-docker run -p 8000:8000 mlops-lab2
+### 4. Run the API Locally
+Start the FastAPI server to serve predictions.
+```bash
+uv run uvicorn api.api:app --reload
+```
+Visit `http://127.0.0.1:8000/docs` to test the `/predict` endpoint.
+
+### 5. Docker
+Build and run the container.
+```bash
+docker build -t mlops-lab3 .
+docker run -p 8000:8000 mlops-lab3
 ```
 
----
-
-## ⚙️ Configuration
-
-To replicate this pipeline, configure these **Secrets** in GitHub:
-
-| Secret | Description |
-|--------|-------------|
-| `DOCKERHUB_USERNAME` | Docker Hub ID |
-| `DOCKERHUB_TOKEN` | Docker Hub Access Token |
-| `RENDER_DEPLOY_HOOK_KEY` | Render Webhook Key |
-| `HF_USERNAME` | Hugging Face Username |
-| `HF_TOKEN` | Hugging Face Write Token |
-
-**Hugging Face Configuration:**
--   Add a Variable `API_URL` in your Space settings pointing to your Render URL.
-
----
-
-## 👤 Author
-
-**Maria Ines Haddad**
--   **Course**: MLOps
--   **Lab**: 2 (Continuous Delivery)
+## Testing
+Run tests to verify artifacts existence.
+```bash
+uv run pytest tests/
+```

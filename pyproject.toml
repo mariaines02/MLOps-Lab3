@@ -1,9 +1,9 @@
 [project]
-name = "mlops-lab2-demo"
+name = "mlops-lab3-demo"
 version = "0.1.0"
-description = "Add your description here"
+description = "MLOps Lab 3"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.11"
 dependencies = [
     "click>=8.0",
     "pytest>=7.0",
@@ -19,4 +19,14 @@ dependencies = [
     "requests>=2.32.5",
     "docker>=7.1.0",
     "huggingface-hub[cli]>=0.35.3",
+    "torch",
+    "torchvision",
+    "mlflow",
+    "onnx",
+    "onnxruntime",
+    "numpy",
+    "pandas",
+    "onnxscript>=0.5.6",
+    "matplotlib",
+    "pip",
 ]

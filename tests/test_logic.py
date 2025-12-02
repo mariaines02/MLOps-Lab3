@@ -18,7 +18,9 @@ def predictor():
 @pytest.fixture
 def custom_predictor():
     """Fixture providing a predictor with custom classes."""
-    return ImagePredictor(class_names=["apple", "banana", "orange"])
+    # Custom classes are now handled via JSON file, so we skip this or mock it if needed.
+    # For now, we'll just return a standard predictor as the custom init is deprecated.
+    return ImagePredictor()
 
 
 @pytest.fixture
@@ -41,15 +43,16 @@ def sample_image_bytes():
 
 def test_predictor_initialization(predictor):
     """Test predictor initializes with default classes."""
-    assert len(predictor.class_names) == 10
-    assert "cat" in predictor.class_names
-    assert "dog" in predictor.class_names
+    # Oxford Pets has 37 classes
+    assert len(predictor.classes) == 37
+    assert "Abyssinian" in predictor.classes
+    assert "Yorkshire Terrier" in predictor.classes
 
 
 def test_custom_predictor_initialization(custom_predictor):
     """Test predictor initializes with custom classes."""
-    assert len(custom_predictor.class_names) == 3
-    assert "apple" in custom_predictor.class_names
+    # This test is no longer relevant as we load classes from file
+    pass
 
 
 def test_predict_returns_dict(predictor):
@@ -72,13 +75,13 @@ def test_predict_with_seed_reproducibility(predictor):
 def test_predict_confidence_range(predictor):
     """Test predict confidence is within expected range."""
     result = predictor.predict(seed=123)
-    assert 0.7 <= result["confidence"] <= 0.99
+    assert 0.0 <= result["confidence"] <= 1.0
 
 
-def test_predict_class_in_list(predictor):
+def test_predict_class_in_list(predictor, sample_image):
     """Test predicted class is from the class list."""
-    result = predictor.predict(seed=456)
-    assert result["predicted_class"] in predictor.class_names
+    result = predictor.predict(image_path=sample_image, seed=456)
+    assert result["predicted_class"] in predictor.classes
 
 
 def test_resize_image(predictor, sample_image):

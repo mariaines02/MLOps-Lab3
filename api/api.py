@@ -90,8 +90,8 @@ async def predict_image(
         Prediction results with class and confidence
     """
     try:
-        # For now, prediction is random (will be replaced with real model in Lab3)
-        result = predictor.predict(image_path=file.filename, seed=seed)
+        contents = await file.read()
+        result = predictor.predict(image_bytes=contents, seed=seed)
         return PredictionResponse(**result)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e)) from e

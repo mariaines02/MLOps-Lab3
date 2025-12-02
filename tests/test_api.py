@@ -74,7 +74,7 @@ def test_predict_confidence_range(client, sample_image_file):
     response = client.post("/predict", files={"file": sample_image_file})
     assert response.status_code == 200
     data = response.json()
-    assert 0.7 <= data["confidence"] <= 0.99
+    assert 0.0 <= data["confidence"] <= 1.0
 
 
 def test_resize_endpoint(client, sample_image_file):
