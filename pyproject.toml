@@ -18,7 +18,7 @@ dependencies = [
     "gradio>=5.49.1",
     "requests>=2.32.5",
     "docker>=7.1.0",
-    "huggingface-hub[cli]>=0.35.3",
+    "huggingface-hub>=0.26.0",
     "torch",
     "torchvision",
     "mlflow",
