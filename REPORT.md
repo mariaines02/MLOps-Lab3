@@ -65,9 +65,9 @@ Using the MLFlow UI, we analyzed the runs to select the best model.
 
 -   **Selection Criteria**: We selected the model with the highest **Validation Accuracy (`val_acc`)**.
 -   **Best Run**:
-    -   **Run ID**: [Insert Run ID from select_model.py output]
-    -   **Validation Accuracy**: [Insert Best Val Acc]
-    -   **Configuration**: Batch Size = [Value], Learning Rate = [Value].
+    -   **Run ID**: 980e0388749e49339352723c31623485
+    -   **Validation Accuracy**: 0.8397
+    -   **Configuration**: Batch Size = 16, Learning Rate = 0.001.
 
 The selected model was then loaded, converted to **ONNX** format (opset 18) for optimized inference, and saved to `results/model.onnx`. This serialized model is used by the API for production inference.
 
