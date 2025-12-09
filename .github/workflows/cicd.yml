@@ -71,12 +71,12 @@ jobs:
           fetch-depth: 0
           lfs: true
 
+      - name: Install Python dependencies
+        run: pip install huggingface_hub
+
       - name: Push to Hugging Face Spaces
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
           HF_USERNAME: ${{ secrets.HF_USERNAME }}
         run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
-          git remote add huggingface https://$HF_USERNAME:$HF_TOKEN@huggingface.co/spaces/$HF_USERNAME/mlops-lab3
-          git push huggingface hf-space:main -f
+          huggingface-cli upload --repo-type space $HF_USERNAME/mlops-lab3 . . --token $HF_TOKEN --exclude ".git/*" ".github/*" ".venv/*" "__pycache__/*"
