@@ -78,5 +78,16 @@ jobs:
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
+          
+          # Install and configure LFS
+          git lfs install
+          git lfs track "*.onnx"
+          git lfs track "*.data"
+          git add .gitattributes
+          
+          # Renormalize files to convert them to LFS pointers
+          git add --renormalize results/
+          git commit -m "Convert binary files to LFS" || echo "Nothing to commit"
+          
           git remote add huggingface https://$HF_USERNAME:$HF_TOKEN@huggingface.co/spaces/$HF_USERNAME/mlops-lab3
           git push huggingface main -f
