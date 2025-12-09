@@ -59,7 +59,7 @@ jobs:
         run: |
           # Replace 'srv-placeholder' with your actual Render service ID part of the URL
           # The secret RENDER_DEPLOY_HOOK_KEY should contain only the key part (after ?key=)
-          curl -X POST https://api.render.com/deploy/srv-placeholder?key=${{ secrets.RENDER_DEPLOY_HOOK_KEY }}
+          curl -X POST https://api.render.com/deploy/srv-d4rv368gjchc7382vbqg?key=${{ secrets.RENDER_DEPLOY_HOOK_KEY }}
 
   deploy-hf:
     runs-on: ubuntu-latest
