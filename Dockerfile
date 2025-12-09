@@ -23,6 +23,9 @@ RUN pip install --no-cache-dir uv
 COPY pyproject.toml .
 # Copy the lock file if exists
 COPY uv.lock* .
+# Install CPU-only PyTorch to save space
+RUN uv pip install --system --no-cache torch torchvision --index-url https://download.pytorch.org/whl/cpu
+
 # Install the dependencies of the project in the system's environment
 RUN uv pip install --system --no-cache .
 
@@ -34,6 +37,7 @@ COPY --from=builder /usr/local /usr/local
 COPY api ./api
 COPY logic ./logic
 COPY templates ./templates
+COPY results ./results
 # Expose the port associated with the API created with FastAPI
 EXPOSE 8000
 # Default command: it starts the API with uvicorn
