@@ -25,7 +25,7 @@ jobs:
         run: uv sync
 
       - name: Run Tests
-        run: uv run pytest tests/
+        run: PYTHONPATH=. uv run pytest tests/
 
   deploy-api:
     needs: test
