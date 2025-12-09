@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - hf-space
   pull_request:
     branches:
       - main
@@ -61,7 +62,6 @@ jobs:
           curl -X POST https://api.render.com/deploy/srv-placeholder?key=${{ secrets.RENDER_DEPLOY_HOOK_KEY }}
 
   deploy-hf:
-    needs: deploy-api
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
