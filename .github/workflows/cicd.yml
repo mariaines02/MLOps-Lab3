@@ -67,7 +67,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: hf-space
+          ref: main
           fetch-depth: 0
           lfs: true
 
@@ -79,4 +79,4 @@ jobs:
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
           git remote add huggingface https://$HF_USERNAME:$HF_TOKEN@huggingface.co/spaces/$HF_USERNAME/mlops-lab3
-          git push huggingface hf-space:main -f
+          git push huggingface main -f
