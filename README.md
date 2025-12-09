@@ -1,3 +1,15 @@
+---
+title: MLOps Lab 3 - Pet Classifier
+emoji: 🐾
+colorFrom: indigo
+colorTo: blue
+sdk: gradio
+sdk_version: 5.0.1
+app_file: app.py
+pinned: false
+license: mit
+---
+
 # MLOps Lab 3: Experiment Tracking and Model Versioning
 
 This project is the final stage of the MLOps Laboratory series, building upon the API/CLI foundation of **Lab 1** and the Docker/CD pipeline of **Lab 2**.
