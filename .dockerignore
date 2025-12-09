@@ -1,0 +1,31 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git
+.mypy_cache
+.pytest_cache
+.hypotheses
+mlruns/
+data/
+plots/
+# We explicitly copy results/ in Dockerfile, but usually we ignore it. 
+# However, since we need the model artifacts, we should NOT ignore results/ 
+# OR we should ignore it and rely on the COPY instruction if the context includes it.
+# Docker COPY respects .dockerignore. 
+# So we must NOT ignore results/ if we want to COPY it.
+# But we might want to ignore other large files.

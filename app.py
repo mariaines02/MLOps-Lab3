@@ -106,57 +106,106 @@ def normalize(image):
         return None
 
 # Define the Gradio Interface with Tabs
-with gr.Blocks(title="MLOps Lab 2 - Image Tools") as app:
-    gr.Markdown("# 🖼️ Image Processing & Classification API")
-    gr.Markdown("Upload an image and choose a tool below.")
+theme = gr.themes.Soft(
+    primary_hue="indigo",
+    secondary_hue="blue",
+    neutral_hue="slate",
+)
 
-    # Tab 1: Prediction
-    with gr.Tab("🔮 Predict"):
-        with gr.Row():
-            pred_input = gr.Image(type="filepath", label="Upload Image")
-            pred_output = gr.Textbox(label="Prediction Result")
-        pred_button = gr.Button("Predict Class")
-        pred_button.click(predict, inputs=pred_input, outputs=pred_output)
+css = """
+.container { max-width: 1200px; margin: auto; }
+.header { text-align: center; margin-bottom: 2rem; }
+"""
 
-    # Tab 2: Resize
-    with gr.Tab("📏 Resize"):
-        with gr.Row():
-            resize_input = gr.Image(type="filepath", label="Upload Image")
-            with gr.Column():
-                width_input = gr.Number(value=224, label="Width")
-                height_input = gr.Number(value=224, label="Height")
-            resize_output = gr.Image(label="Resized Image")
-        resize_button = gr.Button("Resize Image")
-        resize_button.click(resize, inputs=[resize_input, width_input, height_input], outputs=resize_output)
+with gr.Blocks(theme=theme, css=css, title="MLOps Lab 3 - Pet Classifier") as app:
+    with gr.Column(elem_classes="container"):
+        gr.Markdown(
+            """
+            # 🐾 Pet Classifier & Image Tools
+            ### MLOps Lab 3 Demo
+            Upload an image to classify the pet breed or perform image processing operations.
+            """,
+            elem_classes="header",
+        )
 
-    # Tab 3: Grayscale
-    with gr.Tab("⚫ Grayscale"):
-        with gr.Row():
-            gray_input = gr.Image(type="filepath", label="Upload Image")
-            gray_output = gr.Image(label="Grayscale Image")
-        gray_button = gr.Button("Convert to Grayscale")
-        gray_button.click(grayscale, inputs=gray_input, outputs=gray_output)
+        with gr.Tabs():
+            # Tab 1: Prediction
+            with gr.TabItem("🔮 Predict"):
+                with gr.Row():
+                    with gr.Column():
+                        pred_input = gr.Image(type="filepath", label="Upload Image", height=400)
+                        pred_button = gr.Button("Predict Class", variant="primary", size="lg")
+                        
+                        gr.Examples(
+                            examples=["test_image.jpg"],
+                            inputs=pred_input,
+                            label="Try an example"
+                        )
 
-    # Tab 4: Crop
-    with gr.Tab("✂️ Crop"):
-        with gr.Row():
-            crop_input = gr.Image(type="filepath", label="Upload Image")
-            with gr.Column():
-                left_input = gr.Number(value=0, label="Left")
-                top_input = gr.Number(value=0, label="Top")
-                right_input = gr.Number(value=200, label="Right")
-                bottom_input = gr.Number(value=200, label="Bottom")
-            crop_output = gr.Image(label="Cropped Image")
-        crop_button = gr.Button("Crop Image")
-        crop_button.click(crop, inputs=[crop_input, left_input, top_input, right_input, bottom_input], outputs=crop_output)
+                    with gr.Column():
+                        pred_output = gr.Textbox(
+                            label="Prediction Result",
+                            lines=4,
+                            show_copy_button=True
+                        )
+                
+                pred_button.click(predict, inputs=pred_input, outputs=pred_output)
 
-    # Tab 5: Normalize
-    with gr.Tab("📊 Normalize"):
-        with gr.Row():
-            norm_input = gr.Image(type="filepath", label="Upload Image")
-            norm_output = gr.Image(label="Normalized Image")
-        norm_button = gr.Button("Normalize Image")
-        norm_button.click(normalize, inputs=norm_input, outputs=norm_output)
+            # Tab 2: Resize
+            with gr.TabItem("📏 Resize"):
+                with gr.Row():
+                    with gr.Column():
+                        resize_input = gr.Image(type="filepath", label="Upload Image", height=400)
+                        with gr.Row():
+                            width_input = gr.Number(value=224, label="Width", precision=0)
+                            height_input = gr.Number(value=224, label="Height", precision=0)
+                        resize_button = gr.Button("Resize Image", variant="primary")
+                    
+                    with gr.Column():
+                        resize_output = gr.Image(label="Resized Image")
+                
+                resize_button.click(resize, inputs=[resize_input, width_input, height_input], outputs=resize_output)
+
+            # Tab 3: Grayscale
+            with gr.TabItem("⚫ Grayscale"):
+                with gr.Row():
+                    with gr.Column():
+                        gray_input = gr.Image(type="filepath", label="Upload Image", height=400)
+                        gray_button = gr.Button("Convert to Grayscale", variant="primary")
+                    
+                    with gr.Column():
+                        gray_output = gr.Image(label="Grayscale Image")
+                
+                gray_button.click(grayscale, inputs=gray_input, outputs=gray_output)
+
+            # Tab 4: Crop
+            with gr.TabItem("✂️ Crop"):
+                with gr.Row():
+                    with gr.Column():
+                        crop_input = gr.Image(type="filepath", label="Upload Image", height=400)
+                        with gr.Row():
+                            left_input = gr.Number(value=0, label="Left", precision=0)
+                            top_input = gr.Number(value=0, label="Top", precision=0)
+                            right_input = gr.Number(value=200, label="Right", precision=0)
+                            bottom_input = gr.Number(value=200, label="Bottom", precision=0)
+                        crop_button = gr.Button("Crop Image", variant="primary")
+                    
+                    with gr.Column():
+                        crop_output = gr.Image(label="Cropped Image")
+                
+                crop_button.click(crop, inputs=[crop_input, left_input, top_input, right_input, bottom_input], outputs=crop_output)
+
+            # Tab 5: Normalize
+            with gr.TabItem("📊 Normalize"):
+                with gr.Row():
+                    with gr.Column():
+                        norm_input = gr.Image(type="filepath", label="Upload Image", height=400)
+                        norm_button = gr.Button("Normalize Image", variant="primary")
+                    
+                    with gr.Column():
+                        norm_output = gr.Image(label="Normalized Image")
+                
+                norm_button.click(normalize, inputs=norm_input, outputs=norm_output)
 
 if __name__ == "__main__":
     app.launch()
