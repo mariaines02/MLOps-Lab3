@@ -117,7 +117,7 @@ css = """
 .header { text-align: center; margin-bottom: 2rem; }
 """
 
-with gr.Blocks(css=css, title="MLOps Lab 3 - Pet Classifier") as app:
+with gr.Blocks(title="MLOps Lab 3 - Pet Classifier") as app:
     with gr.Column(elem_classes="container"):
         gr.Markdown(
             """
