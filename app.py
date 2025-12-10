@@ -145,8 +145,7 @@ with gr.Blocks(title="MLOps Lab 3 - Pet Classifier") as app:
                     with gr.Column():
                         pred_output = gr.Textbox(
                             label="Prediction Result",
-                            lines=4,
-                            show_copy_button=True
+                            lines=4,                    
                         )
                 
                 pred_button.click(predict, inputs=pred_input, outputs=pred_output)
