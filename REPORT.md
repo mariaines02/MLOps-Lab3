@@ -16,7 +16,10 @@ This project represents the culmination of a three-part MLOps laboratory series,
 
 ### Lab 2: Deployment (CD & Containerization)
 -   **Goal**: Automate deployment and containerize the application.
--   **Contribution**: Dockerized the application (`Dockerfile`). Implemented Continuous Delivery to deploy the API to Render and the UI (Gradio) to Hugging Face Spaces. Added `app.py` for the frontend interface.
+-   **Contribution**: 
+    -   **Backend**: Dockerized the FastAPI application (`Dockerfile`) and deployed it to **Render**.
+    -   **Frontend**: Created a Gradio interface (`app.py`) and deployed it to **Hugging Face Spaces**.
+    -   **Decoupling**: The frontend is lightweight (using `requirements-frontend.txt`) and communicates with the backend via HTTP requests, ensuring a scalable and efficient architecture.
 
 ### Lab 3: Intelligence (MLOps & Model Management)
 -   **Goal**: Replace the random predictor with a real, trained machine learning model.
@@ -65,9 +68,9 @@ Using the MLFlow UI, we analyzed the runs to select the best model.
 
 -   **Selection Criteria**: We selected the model with the highest **Validation Accuracy (`val_acc`)**.
 -   **Best Run**:
-    -   **Run ID**: 980e0388749e49339352723c31623485
-    -   **Validation Accuracy**: 0.8397
-    -   **Configuration**: Batch Size = 16, Learning Rate = 0.001.
+    -   **Run ID**: 1e8d741fb5ac445084c9e7b404b31f6c
+    -   **Validation Accuracy**: 0.8057
+    -   **Configuration**: Batch Size = 4, Learning Rate = 0.001.
 
 The selected model was then loaded, converted to **ONNX** format (opset 18) for optimized inference, and saved to `results/model.onnx`. This serialized model is used by the API for production inference.
 

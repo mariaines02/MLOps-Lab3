@@ -67,15 +67,23 @@ uv run uvicorn api.api:app --reload
 ```
 Visit `http://127.0.0.1:8000/docs` to test the `/predict` endpoint.
 
-### 5. Docker
-Build and run the container.
+### 5. Docker Deployment (Backend)
+The backend API is containerized using Docker. This is what runs on Render.
 ```bash
 docker build -t mlops-lab3 .
 docker run -p 8000:8000 mlops-lab3
 ```
 
+### 6. Hugging Face Space (Frontend)
+The frontend is a Gradio app (`app.py`) that communicates with the backend API.
+- **SDK**: Gradio
+- **App File**: `app.py`
+- **Requirements**: `requirements-frontend.txt` (Lightweight, no PyTorch/MLFlow)
+
+**Note**: When deploying to Hugging Face, ensure you set the `API_URL` environment variable to point to your Render deployment.
+
 ## Testing
-Run tests to verify artifacts existence.
+Run tests to verify logic, API endpoints, and artifact existence.
 ```bash
 uv run pytest tests/
 ```

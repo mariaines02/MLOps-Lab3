@@ -117,7 +117,7 @@ css = """
 .header { text-align: center; margin-bottom: 2rem; }
 """
 
-with gr.Blocks(theme=theme, css=css, title="MLOps Lab 3 - Pet Classifier") as app:
+with gr.Blocks(title="MLOps Lab 3 - Pet Classifier") as app:
     with gr.Column(elem_classes="container"):
         gr.Markdown(
             """
@@ -145,8 +145,7 @@ with gr.Blocks(theme=theme, css=css, title="MLOps Lab 3 - Pet Classifier") as ap
                     with gr.Column():
                         pred_output = gr.Textbox(
                             label="Prediction Result",
-                            lines=4,
-                            show_copy_button=True
+                            lines=4,                    
                         )
                 
                 pred_button.click(predict, inputs=pred_input, outputs=pred_output)
