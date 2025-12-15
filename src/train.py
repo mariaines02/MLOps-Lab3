@@ -78,6 +78,15 @@ def train_model(params):
         # MobileNetV2 classifier is a Sequential with a Dropout and a Linear layer.
         # We replace the last Linear layer.
         model.classifier[1] = nn.Linear(model.last_channel, num_classes)
+    elif params.model_name == "resnet18":
+        model = models.resnet18(weights="IMAGENET1K_V1")
+        # Freeze parameters
+        for param in model.parameters():
+            param.requires_grad = False
+            
+        # ResNet18 has a 'fc' layer instead of 'classifier'
+        num_ftrs = model.fc.in_features
+        model.fc = nn.Linear(num_ftrs, num_classes)
     else:
         raise ValueError(f"Model {params.model_name} not supported yet.")
 
